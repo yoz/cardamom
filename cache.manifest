@@ -1,0 +1,9 @@
+CACHE MANIFEST
+# rev 1
+cards.html
+cardreader.js
+cards.css
+template_index.html
+template_main.html
+handlebars.js
+data/dances.json

@@ -1,0 +1,53 @@
+div.hidden {
+    display: none;
+}
+
+body {
+    background-color: #ffffff;
+}
+
+#settings {
+    background: #b3c3f1;
+    margin-bottom: 1ex;
+}
+
+#index {
+    background: #f0ffd2;
+    line-height: 100%;
+    padding: 0.5ex;
+    margin-top: 1ex;
+    position: relative;
+}
+
+#left {
+    float: left;
+    width: 15em;
+}
+
+#main {
+    margin-left: 17em;
+    margin-right: 1ex;
+    padding-top: 1.3ex;
+    padding-bottom: 1ex;
+    padding-left: 1.7ex;
+    padding-right: 1.7ex;
+    position: absolute;
+    background: #ffffe2;
+    border: 2px solid;
+}
+
+div.fixed {
+    font-family: 'monospace', 'courier';
+    line-height: 1.25em;
+    min-height: 1em;
+    white-space: pre-wrap;
+    max-width: 100%;
+}
+
+div.indexlink {
+    padding-left: 3ex;
+    text-indent: -3ex;
+    line-height: 1em;
+    margin-top: 0.6ex;
+    margin-bottom: 0.6ex;
+}
