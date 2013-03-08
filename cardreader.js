@@ -26,7 +26,7 @@ var armbands = 'bands';
 var armband = 'band';
 
 // All of these only match complete words.
-// TODO(yoz): capitalized versions!
+// TODO(yoz): Deal with punctuation/apostrophes.
 var genderFreeMap = {
   'ladies': barearms,
   'lady': barearm,
@@ -45,17 +45,25 @@ var templateMain;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
 var selectedDance;
 
+function replaceWord(text, fromWord, toWord) {
+  function capitalize(word) {
+    return word[0].toUpperCase() + word.slice(1);
+  }
+  // TODO(yoz): don't rebuild regexps so much
+  var re = new RegExp('\\b' + fromWord + '\\b', 'g');
+  var recap = new RegExp('\\b' + capitalize(fromWord) + '\\b', 'g');
+  return text.replace(re, toWord).replace(recap, capitalize(toWord));
+}
+
 function redisplayMain() {
   var elMain = document.getElementById('main');
   var context = {lings: dances[selectedDance]};
   var main = templateMain(context);
+  // TODO(yoz): can this be more efficient than making copies?
   if (!gendered) {
     for (var fromWord in genderFreeMap) {
       if (genderFreeMap.hasOwnProperty(fromWord)) {
-        // TODO(yoz): can this be more efficient than making copies?
-        // TODO(yoz): don't rebuild regexps so much
-        var re = new RegExp('\\b' + fromWord + '\\b', 'g');
-        main = main.replace(re, genderFreeMap[fromWord]);
+        main = replaceWord(main, fromWord, genderFreeMap[fromWord]);
       }
     }
   }

@@ -58,5 +58,11 @@ def ImportDir(src):
         dances.append(Dance(open(os.path.join(src, filename)).read()))
     return dances
 
+def ImportDirs(srcs):
+    dances = []
+    for src in srcs:
+        dances.extend(ImportDir(src))
+    return dances
+
 def DumpDances(dances):
     return json.dumps(dict((x.name, x.lines) for x in dances))
