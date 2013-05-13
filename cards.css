@@ -1,4 +1,4 @@
-div.hidden {
+.hidden {
     display: none;
 }
 
@@ -8,6 +8,12 @@ body {
 
 #settings {
     background: #b3c3f1;
+    margin-bottom: 1ex;
+}
+
+#search {
+    background: #d4f1d8;
+    margin-top: 1ex;
     margin-bottom: 1ex;
 }
 

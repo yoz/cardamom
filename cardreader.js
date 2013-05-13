@@ -44,6 +44,8 @@ var dances;
 var templateMain;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
 var selectedDance;
+var indexLinks;
+var indexNames = [];
 
 function replaceWord(text, fromWord, toWord) {
   function capitalize(word) {
@@ -79,12 +81,23 @@ function getSelectDance(name) {
 
 function toggleGender(name) {
   gendered = document.getElementById('gender').checked;
-  console.log(gendered);
   redisplayMain();
+}
+
+function filterIndex() {
+  var nameFilter = document.getElementById('namefilter').value.toLowerCase();
+  for (var i = 0; i < indexNames.length; ++i) {
+    if (indexNames[i].search(nameFilter) > -1) {
+      indexLinks[i].classList.remove('hidden');
+    } else {
+      indexLinks[i].classList.add('hidden');
+    }
+  }
 }
 
 window.onload = function() {
   document.getElementById('gender').addEventListener('click', toggleGender);
+  document.getElementById('namefilter').addEventListener('input', filterIndex);
 
   requestURL('template_main.html', function(mainBlob) {
     requestURL('template_index.html', function(indexBlob) {
@@ -103,8 +116,10 @@ window.onload = function() {
         var elIndex = document.getElementById('index');
         elIndex.innerHTML = templateIndex(indexContext);
         // Add click handlers to index.
-        var indexLinks = elIndex.getElementsByClassName('indexlink');
+        // Set global indexLinks.
+        indexLinks = elIndex.getElementsByClassName('indexlink');
         for (var i = 0; i < indexLinks.length; ++i) {
+          indexNames[i] = indexLinks[i].firstElementChild.text.toLowerCase();
           var alink = indexLinks[i].firstElementChild;
           alink.addEventListener('click',
                                  getSelectDance(alink.text));

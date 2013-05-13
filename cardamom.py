@@ -66,3 +66,9 @@ def ImportDirs(srcs):
 
 def DumpDances(dances):
     return json.dumps(dict((x.name, x.lines) for x in dances))
+
+if __name__ == '__main__':
+    dances = ImportDirs(['../asymmetric', '../4face4/', '../duplesymmetric', '../triplets', '../incomplete'])
+    f = open('aout.json', 'w')
+    f.write(DumpDances(dances))
+    f.close()
