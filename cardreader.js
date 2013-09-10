@@ -73,13 +73,13 @@ function redisplayMain() {
   }
   elMains.innerHTML = mains;
 
-  var controls = document.getElementsByClassName('cardcontrols');
+  var cards = document.getElementsByClassName('card');
   for (var i = 0; i < selectedDances.length; ++i) {
-    var x = controls[i];
+    var x = cards[i];
     var name = selectedDances[i];
-    x.getElementsByClassName('up')[0].addEventListener('click', getUpDance(name, x.parentNode));
-    x.getElementsByClassName('down')[0].addEventListener('click', getDownDance(name, x.parentNode));
-    x.getElementsByClassName('out')[0].addEventListener('click', getCloseDance(name, x.parentNode));
+    x.getElementsByClassName('up')[0].addEventListener('click', getUpDance(name, x));
+    x.getElementsByClassName('down')[0].addEventListener('click', getDownDance(name, x));
+    x.getElementsByClassName('out')[0].addEventListener('click', getCloseDance(name, x));
   }
 };
 

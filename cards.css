@@ -37,30 +37,41 @@ body {
 }
 
 div.card {
+    position: relative;
     margin-bottom: 2ex;
 }
 
-div.cardcontrols {
+.up, .down, .out {
+    float: left;
     font-family: 'monospace', 'courier';
+    font-size: x-large;
 }
 
-.up, .down, .out {
-    margin-right: 4ex;
-    border: 2px solid;
+.up {
+    vertical-align: top;
+}
+
+.down {
+    position: absolute;
+    bottom: 0;
 }
 
 .out {
-    margin-left: 8ex;
-    color: #c00000;
+    color: #a00000;
 }
 
-div.cardtext {
+.cardtext {
+    float: left;
     padding-top: 1.3ex;
     padding-bottom: 1ex;
     padding-left: 1.7ex;
     padding-right: 1.7ex;
     background: #ffffe2;
     border: 2px solid;
+}
+
+.clearly {
+    clear: both;
 }
 
 div.fixed {
