@@ -43,7 +43,7 @@ var gendered = true;
 var dances;
 var templateMain;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
-var selectedDance;
+var selectedDances = [];
 var indexLinks;
 var indexNames = [];
 
@@ -57,26 +57,66 @@ function replaceWord(text, fromWord, toWord) {
   return text.replace(re, toWord).replace(recap, capitalize(toWord));
 }
 
+// TODO(yoz): update changed cards only, more efficiently
+
 function redisplayMain() {
-  var elMain = document.getElementById('main');
-  var context = {lings: dances[selectedDance]};
-  var main = templateMain(context);
+  var elMains = document.getElementById('mains');
+  var context = {lings: selectedDances.map(function(dance) { return dances[dance]; }) };
+  var mains = templateMain(context);
   // TODO(yoz): can this be more efficient than making copies?
   if (!gendered) {
     for (var fromWord in genderFreeMap) {
       if (genderFreeMap.hasOwnProperty(fromWord)) {
-        main = replaceWord(main, fromWord, genderFreeMap[fromWord]);
+        mains = replaceWord(main, fromWord, genderFreeMap[fromWord]);
       }
     }
   }
-  elMain.innerHTML = main;
+  elMains.innerHTML = mains;
+
+  var controls = document.getElementsByClassName('cardcontrols');
+  for (var i = 0; i < selectedDances.length; ++i) {
+    var x = controls[i];
+    var name = selectedDances[i];
+    x.getElementsByClassName('up')[0].addEventListener('click', getUpDance(name, x.parentNode));
+    x.getElementsByClassName('down')[0].addEventListener('click', getDownDance(name, x.parentNode));
+    x.getElementsByClassName('out')[0].addEventListener('click', getCloseDance(name, x.parentNode));
+  }
 };
 
 function getSelectDance(name) {
   return function() {
-    selectedDance = name;
+    selectedDances.push(name);
     redisplayMain();
   };
+}
+
+function getUpDance(name, card) {
+  return function() {
+    var i = selectedDances.indexOf(name);
+    var j = (selectedDances.length + i-1) % selectedDances.length;
+    console.log([i, j]);
+    selectedDances.splice(i, 1);
+    selectedDances.splice(j, 0, name);
+    redisplayMain();  // TODO(yoz): reorder DOM?
+  }
+}
+
+function getDownDance(name, card) {
+  return function() {
+    var i = selectedDances.indexOf(name);
+    var j = (i+1) % selectedDances.length;
+    selectedDances.splice(i, 1);
+    selectedDances.splice(j, 0, name);
+    redisplayMain();  // TODO(yoz): reorder DOM?
+  }
+}
+
+function getCloseDance(name, card) {
+  return function() {
+    var i = selectedDances.indexOf(name);
+    selectedDances.splice(i, 1);
+    card.parentNode.removeChild(card);
+  }
 }
 
 function toggleGender(name) {

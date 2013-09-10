@@ -30,14 +30,35 @@ body {
     width: 15em;
 }
 
-#main {
+#mains {
     margin-left: 17em;
     margin-right: 1ex;
+    position: absolute;
+}
+
+div.card {
+    margin-bottom: 2ex;
+}
+
+div.cardcontrols {
+    font-family: 'monospace', 'courier';
+}
+
+.up, .down, .out {
+    margin-right: 4ex;
+    border: 2px solid;
+}
+
+.out {
+    margin-left: 8ex;
+    color: #c00000;
+}
+
+div.cardtext {
     padding-top: 1.3ex;
     padding-bottom: 1ex;
     padding-left: 1.7ex;
     padding-right: 1.7ex;
-    position: absolute;
     background: #ffffe2;
     border: 2px solid;
 }
