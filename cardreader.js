@@ -67,7 +67,7 @@ function redisplayMain() {
   if (!gendered) {
     for (var fromWord in genderFreeMap) {
       if (genderFreeMap.hasOwnProperty(fromWord)) {
-        mains = replaceWord(main, fromWord, genderFreeMap[fromWord]);
+        mains = replaceWord(mains, fromWord, genderFreeMap[fromWord]);
       }
     }
   }
