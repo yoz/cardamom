@@ -8,7 +8,10 @@ import tags
 def ImportDir(src):
     dances = []
     for filename in os.listdir(src):
-        dances.append(Dance(open(os.path.join(src, filename)).read()))
+        try:
+            dances.append(Dance(open(os.path.join(src, filename)).read()))
+        except Exception as e:
+            print 'Error in %s: %s' % (filename, e)
     return dances
 
 def ImportDirs(srcs):
