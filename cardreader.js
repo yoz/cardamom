@@ -20,10 +20,11 @@ function requestURL(url, callback) {
   }
 }
 
-var barearms = 'barearms';
-var barearm = 'barearm';
-var armbands = 'bands';
-var armband = 'band';
+// TODO(yoz): Make this toggleable.
+var barearms = 'ravens';
+var barearm = 'raven';
+var armbands = 'larks';
+var armband = 'lark';
 
 // All of these only match complete words.
 // TODO(yoz): Deal with punctuation/apostrophes.
