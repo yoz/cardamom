@@ -1,5 +1,8 @@
 import re
 
+# This is for generating tags for contra dances
+# (parsing them out of the plaintext format).
+
 # Tag values:
 # 0, 1, 2+
 # enum
@@ -72,11 +75,22 @@ _BODY_TAGS = [
   CountTag('circle left'),
   CountTag('hey'),
   CountTag('long lines'),
+  CountTag('gypsy'),
+  CountTag('mad robin'),
+  CountTag('ladies chain'),
+  # Think about: why aren't these all count tags?
+  ZeroOneTag('1s', name='asymmetric'),
+  ZeroOneTag('2s', name='asymmetric'),
+  ZeroOneTag('gent 1', name='asymmetric'),
+  ZeroOneTag('gent 2', name='asymmetric'),
+  ZeroOneTag('lady 1', name='asymmetric'),
+  ZeroOneTag('lady 2', name='asymmetric'),
   ZeroOneTag('circle right'),
   ZeroOneTag('short wave'),
   ZeroOneTag('long wave'),
+  ZeroOneTag('pass thru to wave', name='short wave'),
+  ZeroOneTag('pass the ocean', name='short wave'),
   ZeroOneTag('down the hall'),
-  ZeroOneTag('ladies chain'),
   ZeroOneTag('gents allemande left'),
   ZeroOneTag('shadow'),
 ]

@@ -5,11 +5,13 @@ import os
 from dance import Dance
 import tags
 
+
 def ImportDir(src):
     dances = []
     for filename in os.listdir(src):
         dances.append(Dance(open(os.path.join(src, filename)).read()))
     return dances
+
 
 def ImportDirs(srcs):
     dances = []
@@ -17,8 +19,12 @@ def ImportDirs(srcs):
         dances.extend(ImportDir(src))
     return dances
 
+
 def DumpDances(dances):
-    return json.dumps(dict((x.name, x.lines) for x in dances))
+    return json.dumps(dict((x.name,
+                            x.AsDict())
+                           for x in dances))
+
 
 if __name__ == '__main__':
     dances = ImportDirs(['../working', '../incomplete'])

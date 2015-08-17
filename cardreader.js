@@ -62,7 +62,7 @@ function replaceWord(text, fromWord, toWord) {
 
 function redisplayMain() {
   var elMains = document.getElementById('mains');
-  var context = {lings: selectedDances.map(function(dance) { return dances[dance]; }) };
+  var context = {lings: selectedDances.map(function(dance) { return dances[dance].lines; }) };
   var mains = templateMain(context);
   // TODO(yoz): can this be more efficient than making copies?
   if (!gendered) {
