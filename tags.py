@@ -67,6 +67,8 @@ _HEADER_TAGS = [
   ZeroOneTag('compact'),
   ZeroOneTag('short wave'),  # these can appear in starting formations
   ZeroOneTag('long wave'),
+  ZeroOneTag('proper'),
+  ZeroOneTag('proper', name='asymmetric'),
 ]
 
 
@@ -85,6 +87,7 @@ _BODY_TAGS = [
   ZeroOneTag('gent 2', name='asymmetric'),
   ZeroOneTag('lady 1', name='asymmetric'),
   ZeroOneTag('lady 2', name='asymmetric'),
+  ZeroOneTag('figure 8', name='asymmetric'),
   ZeroOneTag('circle right'),
   ZeroOneTag('short wave'),
   ZeroOneTag('long wave'),
