@@ -20,6 +20,15 @@ function requestURL(url, callback) {
   }
 }
 
+function summarizeTags(dances) {
+  // Input: dances, a map of dance name -> object
+  // object.tags is a dictionary of "name": n (n is an integer)
+
+  // Output: tags, a map of tag name -> max count
+
+  // Infer that a tag is binary if its max value is 1.
+}
+
 // TODO(yoz): Make this toggleable.
 var barearms = 'ravens';
 var barearm = 'raven';
@@ -145,8 +154,9 @@ window.onload = function() {
       var templateIndex = Handlebars.compile(indexBlob);
       templateMain = Handlebars.compile(mainBlob);
       requestURL('data/dances.json', function(danceBlob) {
-        // Populate index.
         dances = JSON.parse(danceBlob);
+
+        // Populate index.
         var indexContext = {names: []};
         for (var name in dances) {
           if (dances.hasOwnProperty(name)) {
@@ -165,6 +175,9 @@ window.onload = function() {
           alink.addEventListener('click',
                                  getSelectDance(alink.text));
         }
+
+        // Populate tags.
+        tags = summarizeTags(dances);
       });
     });
   });

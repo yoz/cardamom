@@ -17,6 +17,12 @@ body {
     margin-bottom: 1ex;
 }
 
+#tags {
+    background: #d5c3e5;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
 #index {
     background: #f0ffd2;
     line-height: 100%;
