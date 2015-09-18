@@ -48,10 +48,10 @@ var genderFreeMap = {
   'man': armband,
 };
 
-// TODO(yoz): not in global context
+// TODO(yoz): globals are gross
 var gendered = true;
 var dances;
-var templateMain;
+var templateCard;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
 var selectedDances = [];
 var indexLinks;
@@ -72,7 +72,7 @@ function replaceWord(text, fromWord, toWord) {
 function redisplayMain() {
   var elMains = document.getElementById('mains');
   var context = {lings: selectedDances.map(function(dance) { return dances[dance].lines; }) };
-  var mains = templateMain(context);
+  var mains = templateCard(context);
   // TODO(yoz): can this be more efficient than making copies?
   if (!gendered) {
     for (var fromWord in genderFreeMap) {
@@ -146,13 +146,10 @@ function filterIndex() {
 }
 
 window.onload = function() {
-  document.getElementById('gender').addEventListener('click', toggleGender);
-  document.getElementById('namefilter').addEventListener('input', filterIndex);
-
-  requestURL('template_main.html', function(mainBlob) {
-    requestURL('template_index.html', function(indexBlob) {
-      var templateIndex = Handlebars.compile(indexBlob);
-      templateMain = Handlebars.compile(mainBlob);
+  requestURL('template_card.html', function(cardBlob) {
+    requestURL('template_whole.html', function(wholeBlob) {
+      templateCard = Handlebars.compile(cardBlob);
+      var templateWhole = Handlebars.compile(wholeBlob);
       requestURL('data/dances.json', function(danceBlob) {
         dances = JSON.parse(danceBlob);
 
@@ -164,10 +161,14 @@ window.onload = function() {
           }
         }
         indexContext.names.sort();
-        var elIndex = document.getElementById('index');
-        elIndex.innerHTML = templateIndex(indexContext);
+
+        document.body.innerHTML = templateWhole(indexContext);
+
+        document.getElementById('gender').addEventListener('click', toggleGender);
+        document.getElementById('namefilter').addEventListener('input', filterIndex);
         // Add click handlers to index.
         // Set global indexLinks.
+        var elIndex = document.getElementById('index');
         indexLinks = elIndex.getElementsByClassName('indexlink');
         for (var i = 0; i < indexLinks.length; ++i) {
           indexNames[i] = indexLinks[i].firstElementChild.text.toLowerCase();
