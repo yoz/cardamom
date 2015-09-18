@@ -10,9 +10,22 @@
     <input id="namefilter" type="text">
   </div>
   <div id="tags">
-    Tags!
-    <br>
+    <table>
+      {{#binary_tags}}
+      <tr class="tagbox" id="{{this}}">
+        <td class="tagcross">{{this}}</td>
+        <td class="tag0">0</td>
+        <td class="tag1">1</td>
+      </tr>
+      {{/binary_tags}}
+      <!-- requires more magic for counting -->
+      {{#count_tags}}
+      <tr>
+      </tr>
+      {{/count_tags}}
+    </table>
   </div>
+  <br>
   <div id="index">
     {{#names}}
     <div class="indexlink">&#x15ce; <a class="displaydance">{{this}}</a></div>
