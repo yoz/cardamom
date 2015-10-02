@@ -51,8 +51,8 @@ class MultipleProgressionTag(ZeroOneTag):
 
 
 class BalanceCountTag(CountTag):
-  def __init__(self):
-    self.name = 'balance'
+  def __init__(self, name):
+    self.name = name
     self.rory = re.compile(r"16.*rory o'more")
 
   def Match(self, text):
@@ -82,7 +82,7 @@ _HEADER_TAGS = [
 
 
 _BODY_TAGS = [
-  BalanceCountTag(),
+  BalanceCountTag('balance'),
   CountTag('circle left'),
   CountTag('hey'),
   CountTag('long lines'),
@@ -108,6 +108,14 @@ _BODY_TAGS = [
 ]
 
 
+_A_PART_TAGS = [
+  BalanceCountTag('A balance'),
+]
+
+_B_PART_TAGS = [
+  BalanceCountTag('B balance'),  
+]
+
 def ClassifyTags(lines, tags):
   found = {}
   for tag in tags:
@@ -127,3 +135,20 @@ def ClassifyHeaderTags(headers):
 
 def ClassifyBodyTags(body):
   return ClassifyTags(body, _BODY_TAGS)
+
+
+def ClassifyABPartTags(body):
+  # Split body into A and B.
+  found_b = False
+  a_lines = []
+  b_lines = []
+  for line in body:
+    if line.startswith('B'):
+      found_b = True
+    if not found_b:
+      a_lines.append(line)
+    else:
+      b_lines.append(line)
+  tags = ClassifyTags(a_lines, _A_PART_TAGS)
+  tags.update(ClassifyTags(b_lines, _B_PART_TAGS))
+  return tags

@@ -92,6 +92,7 @@ class Dance(object):
     # binary tags rather than count tags (if they're potentially overwritten).
     self.tags.update(tags.ClassifyHeaderTags(self.headers))
     self.tags.update(tags.ClassifyBodyTags(self.body))
+    self.tags.update(tags.ClassifyABPartTags(self.body))
 
   def AsDict(self):
     return {'name': self.name,
