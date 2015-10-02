@@ -32,6 +32,13 @@ class ZeroOneTag(Tag):
   def Reduce(self, a, b):
     return a | b
 
+class NSwingTag(ZeroOneTag):
+  def __init__(self):
+    self.name = 'N swing'
+
+  def Match(self, text):
+    return 'N' in text and 'swing' in text
+
 
 class MultipleProgressionTag(ZeroOneTag):
   def __init__(self):
@@ -69,6 +76,8 @@ _HEADER_TAGS = [
   ZeroOneTag('long wave'),
   ZeroOneTag('proper'),
   ZeroOneTag('proper', name='asymmetric'),
+  ZeroOneTag('mixer'),
+  NSwingTag(),
 ]
 
 

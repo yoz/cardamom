@@ -24,9 +24,7 @@ def ImportDirs(srcs):
 
 
 def DumpDances(dances):
-    return json.dumps(dict((x.name,
-                            x.AsDict())
-                           for x in dances))
+    return json.dumps([x.AsDict() for x in dances])
 
 
 if __name__ == '__main__':

@@ -10,22 +10,29 @@
     <input id="namefilter" type="text">
   </div>
   <div id="tags">
-    <table>
+    <table class="tagtable">
       {{#binary_tags}}
-      <tr class="tagbox" id="{{this}}">
-        <td class="tagcross">{{this}}</td>
-        <td class="tag0">0</td>
-        <td class="tag1">1</td>
+      <tr class="tagbox">
+        <td><input type="button" value="{{this}}" class="tag"></td>
+        <td><input type="button" value="0" class="tag"></td>
+        <td><input type="button" value="1" class="tag"></td>
       </tr>
       {{/binary_tags}}
-      <!-- requires more magic for counting -->
+    </table>
+    <table class="tagtable">
       {{#count_tags}}
-      <tr>
+      <tr class="tagbox">
+        <td><input type="button" value="{{tag}}" class="tag"></td>
+        <td><input type="button" value="0" class="tag"></td>
+        <td><input type="button" value="1" class="tag"></td>
+        {{#counters}}
+        <td><input type="button" value="+" class="tag"></td>
+        <td><input type="button" value="{{this}}" class="tag"></td>
+        {{/counters}}
       </tr>
       {{/count_tags}}
     </table>
   </div>
-  <br>
   <div id="index">
     {{#names}}
     <div class="indexlink">&#x15ce; <a class="displaydance">{{this}}</a></div>

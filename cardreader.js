@@ -21,12 +21,30 @@ function requestURL(url, callback) {
 }
 
 function summarizeTags(dances) {
-  // Input: dances, a map of dance name -> object
-  // object.tags is a dictionary of "name": n (n is an integer)
+  // Input: dances, an array of dances
+  // dance.tags is a dictionary of "name": n (n is an integer)
 
-  // Output: tags, a map of tag name -> max count
+  // Output: tags, a dictionary of "tag": name, "count": count
+  var tagMaxCounts = {};
 
-  // Infer that a tag is binary if its max value is 1.
+  for (var i = 0; i < dances.length; ++i) {
+    _.each(dances[i].tags, function(count, tag, list) {
+      if (!_.has(tagMaxCounts, tag))
+        tagMaxCounts[tag] = count;
+      else
+        tagMaxCounts[tag] = Math.max(tagMaxCounts[tag], count);
+    });
+  }
+
+  return _.map(tagMaxCounts, function(count, tag, list) {
+    return {tag: tag, count: count};
+  }).sort(function(a, b) {
+    if (a.tag < b.tag)
+      return -1;
+    if (a.tag > b.tag)
+      return 1;
+    return 0;
+  });
 }
 
 // TODO(yoz): Make this toggleable.
@@ -54,6 +72,7 @@ var dances;
 var templateCard;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
 var selectedDances = [];
+var tagFilters = {};
 var indexLinks;
 var indexNames = [];
 
@@ -71,7 +90,7 @@ function replaceWord(text, fromWord, toWord) {
 
 function redisplayMain() {
   var elMains = document.getElementById('mains');
-  var context = {lings: selectedDances.map(function(dance) { return dances[dance].lines; }) };
+  var context = {lings: selectedDances.map(function(index) { return dances[index].lines; }) };
   var mains = templateCard(context);
   // TODO(yoz): can this be more efficient than making copies?
   if (!gendered) {
@@ -93,18 +112,18 @@ function redisplayMain() {
   }
 };
 
-function getSelectDance(name) {
+function getSelectDance(index) {
   return function() {
-    selectedDances.push(name);
+    selectedDances.push(index);
     redisplayMain();
   };
 }
 
+// TODO(yoz): These aren't really "names" but "indices" now.
 function getUpDance(name, card) {
   return function() {
     var i = selectedDances.indexOf(name);
     var j = (selectedDances.length + i-1) % selectedDances.length;
-    console.log([i, j]);
     selectedDances.splice(i, 1);
     selectedDances.splice(j, 0, name);
     redisplayMain();  // TODO(yoz): reorder DOM?
@@ -134,6 +153,57 @@ function toggleGender(name) {
   redisplayMain();
 }
 
+// TODO(yoz): What is a sensible return type for this?
+function tagboxIndexToValue(index) {
+  if (index == 0)  // cross-product split
+    return 'x';
+  if (index == 1)  // 0
+    return 0;
+  if (index % 2 == 0)  // 1, 2, ...
+    return index / 2;
+  if (index % 2 == 1)  // 1+, 2+, ...
+    return -Math.floor(index / 2);
+}
+
+function getToggleTag(tagName, value) {
+  return function(event) {
+    function isSelected(tagButton) {
+      return tagButton.classList.contains('tag-selected');
+    }
+
+    function getSelectedInTagbox(tagButton) {
+      var parent = tagButton.parentNode.parentNode;
+      var selectedTagButtons = parent.getElementsByClassName('tag-selected');
+      if (selectedTagButtons)
+        return selectedTagButtons[0];
+      return null;
+    }
+
+    function deselectTagButton(tagButton) {
+      tagButton.classList.remove('tag-selected');
+      tagButton.classList.add('tag');
+      delete tagFilters[tagName];
+    }
+
+    function selectTagButton(tagButton) {
+      tagButton.classList.remove('tag');
+      tagButton.classList.add('tag-selected');
+      tagFilters[tagName] = value;
+    }
+
+    tagButton = event.target;
+    if (isSelected(tagButton)) {
+      deselectTagButton(tagButton);
+    } else {
+      var activeTag = getSelectedInTagbox(tagButton);
+      if (activeTag)
+        deselectTagButton(activeTag);
+      selectTagButton(tagButton);
+    }
+  };
+}
+
+// TODO(yoz): filter on tags.
 function filterIndex() {
   var nameFilter = document.getElementById('namefilter').value.toLowerCase();
   for (var i = 0; i < indexNames.length; ++i) {
@@ -152,20 +222,63 @@ window.onload = function() {
       var templateWhole = Handlebars.compile(wholeBlob);
       requestURL('data/dances.json', function(danceBlob) {
         dances = JSON.parse(danceBlob);
+        // Sort dances so they have a consistent index, alphabetical order.
+        // TODO(yoz): Get a better UID that can survive data changes.
+        dances.sort(function(a, b) {
+          if (a.name < b.name)
+            return -1;
+          if (a.name > b.name)
+            return 1;
+          return 0;
+        });
 
-        // Populate index.
-        var indexContext = {names: []};
-        for (var name in dances) {
-          if (dances.hasOwnProperty(name)) {
-            indexContext.names.push(name);
-          }
+        // Generate tag summary and counts.
+        var tags = summarizeTags(dances);
+        console.log(tags);
+        // We infer that a tag is binary if its max value is 1.
+        // Can we clean this up?
+        // binaryTags: a list of tag names
+        var binaryTags = _.pluck(
+          _.filter(tags, function(tcpair) { return tcpair.count == 1; }),
+          'tag');
+        // countTags: a list of {tag: tagname, counters: [0..n]}
+        // (We expand n to the array [0..n] here, but a handlebars helper
+        // might be more efficient.)
+        var countTags = _.map(
+          _.filter(tags, function(tcpair) { return tcpair.count > 1; }),
+          function(tcpair, i, list) {
+            return {tag: tcpair.tag,
+                    counters: _.range(2, tcpair.count + 1)};
+          });
+
+        // Populate left-side index.
+        var indexContext = {names: [],
+                            binary_tags: binaryTags,
+                            count_tags: countTags};
+        for (var i = 0; i < dances.length; ++i) {
+          indexContext.names.push(dances[i].name);
         }
-        indexContext.names.sort();
 
         document.body.innerHTML = templateWhole(indexContext);
 
         document.getElementById('gender').addEventListener('click', toggleGender);
         document.getElementById('namefilter').addEventListener('input', filterIndex);
+
+        // Add click handlers to tags.
+        var tagboxes = document.getElementsByClassName('tagbox');
+        for (var i = 0; i < tagboxes.length; ++i) {
+          var tagButtons = tagboxes[i].getElementsByTagName('input');
+          // First tag is our tag identifier.
+          var tagName = '';
+          for (var j = 0; j < tagButtons.length; ++j) {
+            if (j == 0)
+              tagName = tagButtons[j].value;
+            tagButtons[j].addEventListener(
+              'click',
+              getToggleTag(tagName, tagboxIndexToValue(j)));
+          }
+        }
+
         // Add click handlers to index.
         // Set global indexLinks.
         var elIndex = document.getElementById('index');
@@ -174,11 +287,9 @@ window.onload = function() {
           indexNames[i] = indexLinks[i].firstElementChild.text.toLowerCase();
           var alink = indexLinks[i].firstElementChild;
           alink.addEventListener('click',
-                                 getSelectDance(alink.text));
+                                 getSelectDance(i));
         }
 
-        // Populate tags.
-        tags = summarizeTags(dances);
       });
     });
   });
