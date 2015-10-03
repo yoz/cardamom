@@ -94,6 +94,7 @@ var dances;
 var templateCard;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
 var selectedDances = [];
+var tagNames = [];
 var tagFilters = {};
 var indexLinks;
 var indexNames = [];
@@ -108,18 +109,23 @@ function replaceWord(text, fromWord, toWord) {
   return text.replace(re, toWord).replace(recap, capitalize(toWord));
 }
 
+// TODO(yoz): can this be more efficient?
+function replaceGenderWords(text) {
+  if (selectedGenderWords) {
+    _.each(GENDER_SOURCE_WORDS, function(to, from, list) {
+      text = replaceWord(text, from, selectedGenderWords[to]);
+    });
+  }
+  return text;
+}
+
 // TODO(yoz): update changed cards only, more efficiently
 
 function redisplayMain() {
   var elMains = document.getElementById('mains');
   var context = {lings: selectedDances.map(function(index) { return dances[index].lines; }) };
   var mains = templateCard(context);
-  // TODO(yoz): can this be more efficient than making copies?
-  if (selectedGenderWords) {
-    _.each(GENDER_SOURCE_WORDS, function(to, from, list) {
-      mains = replaceWord(mains, from, selectedGenderWords[to]);
-    });
-  }
+  mains = replaceGenderWords(mains);
   elMains.innerHTML = mains;
 
   var controls = document.getElementsByClassName('cardcontrols');
@@ -131,6 +137,15 @@ function redisplayMain() {
     x.getElementsByClassName('out')[0].addEventListener('click', getCloseDance(name, x.parentNode));
   }
 };
+
+function redisplayTags() {
+  // Change tag labels to reflect the gender reality.
+  var tagboxes = document.getElementsByClassName('tagbox');
+  for (var i = 0; i < tagboxes.length; ++i) {
+    var tagButtons = tagboxes[i].getElementsByTagName('input');
+    tagButtons[0].value = replaceGenderWords(tagNames[i]);
+  }
+}
 
 function getSelectDance(index) {
   return function() {
@@ -172,6 +187,7 @@ function getRewordGender(genderWords) {
   return function() {
     selectedGenderWords = genderWords;
     redisplayMain();
+    redisplayTags();
   };
 }
 
@@ -296,13 +312,14 @@ window.onload = function() {
         for (var i = 0; i < tagboxes.length; ++i) {
           var tagButtons = tagboxes[i].getElementsByTagName('input');
           // First tag is our tag identifier.
-          var tagName = '';
           for (var j = 0; j < tagButtons.length; ++j) {
+            // Initialize tagNames to match the ordering of tags from
+            // getElementsByClassName.
             if (j == 0)
-              tagName = tagButtons[j].value;
+              tagNames[i] = tagButtons[j].value;
             tagButtons[j].addEventListener(
               'click',
-              getToggleTag(tagName, tagboxIndexToValue(j)));
+              getToggleTag(tagNames[i], tagboxIndexToValue(j)));
           }
         }
 
