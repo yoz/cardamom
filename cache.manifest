@@ -1,9 +1,10 @@
 CACHE MANIFEST
-# rev 27
+# rev 28
 cards.html
 cardreader.js
 cards.css
-template_index.html
-template_main.html
+template_card.html
+template_whole.html
 handlebars.js
+underscore.js
 data/dances.json
