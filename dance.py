@@ -68,7 +68,7 @@ class Dance(object):
       # possibly being figures?
       # Handlebars might be able to deal.
 
-      if previous_line_blank:
+      if previous_line_blank and header_body_break != i - 1:
         if not IsPossibleSectionStart(lines[i]):
           body_footer_break = i - 1  # break on the blank line
           break

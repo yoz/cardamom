@@ -12,39 +12,50 @@ import re
 
 
 class Tag(object):
-  def __init__(self, fragment, name=None):
+  """Tag classifier and combiner, turning text into a value for a tag.
+
+  Subclasses should define DefaultMatch and DefaultReduce implementations.
+  """
+  def __init__(self, fragment, name=None, matcher=None, reducer=None):
     self.fragment = fragment
     self.name = name if name else fragment
+    if matcher:
+      self.matcher = matcher
+    if reducer:
+      self.reducer = reducer
+
+  def Match(self, text):
+    if hasattr(self, 'matcher'):
+      return self.matcher(text)
+    return self.DefaultMatch(text)
+
+  def Reduce(self, a, b):
+    if hasattr(self, 'reducer'):
+      return self.reducer(a, b)
+    return self.DefaultReduce(a, b)
 
 
 class CountTag(Tag):
-  def Match(self, text):
+  def DefaultMatch(self, text):
     return text.count(self.fragment)
 
-  def Reduce(self, a, b):
+  def DefaultReduce(self, a, b):
     return a + b
 
 
 class ZeroOneTag(Tag):
-  def Match(self, text):
+  def DefaultMatch(self, text):
     return int(self.fragment in text)
 
-  def Reduce(self, a, b):
+  def DefaultReduce(self, a, b):
     return a | b
-
-class NSwingTag(ZeroOneTag):
-  def __init__(self):
-    self.name = 'N swing'
-
-  def Match(self, text):
-    return 'N' in text and 'swing' in text
 
 
 class MultipleProgressionTag(ZeroOneTag):
   def __init__(self):
     self.name = 'multiple progression'
 
-  def Match(self, text):
+  def DefaultMatch(self, text):
     # triple, quadruple, quintuple, septuple, etc.
     return int('double progression' in text or
                'ple progression' in text)
@@ -55,7 +66,7 @@ class BalanceCountTag(CountTag):
     self.name = name
     self.rory = re.compile(r"16.*rory o'more")
 
-  def Match(self, text):
+  def DefaultMatch(self, text):
     # The logic here is a bit complex, due to data inconsistency.
     if 'balanced square thru 4' in text:
       return 2
@@ -74,10 +85,9 @@ _HEADER_TAGS = [
   ZeroOneTag('compact'),
   ZeroOneTag('short wave'),  # these can appear in starting formations
   ZeroOneTag('long wave'),
-  ZeroOneTag('proper'),
+  ZeroOneTag('proper', matcher=lambda x: x.startswith('proper')),
   ZeroOneTag('proper', name='asymmetric'),
   ZeroOneTag('mixer'),
-  NSwingTag(),
 ]
 
 
@@ -89,7 +99,9 @@ _BODY_TAGS = [
   CountTag('gypsy'),
   CountTag('mad robin'),
   CountTag('ladies chain'),
-  # Think about: why aren't these all count tags?
+  # TODO(yoz): account for 4-face-4s (e.g. Richfield Stomp, Hey for John)
+  ZeroOneTag('N swing', name='N swing',
+             matcher=lambda x: 'N' in x and 'swing' in x),
   ZeroOneTag('1s', name='asymmetric'),
   ZeroOneTag('2s', name='asymmetric'),
   ZeroOneTag('gent 1', name='asymmetric'),
@@ -112,9 +124,11 @@ _A_PART_TAGS = [
   BalanceCountTag('A balance'),
 ]
 
+
 _B_PART_TAGS = [
   BalanceCountTag('B balance'),  
 ]
+
 
 def ClassifyTags(lines, tags):
   found = {}
