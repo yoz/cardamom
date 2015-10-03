@@ -2,8 +2,8 @@ function requestURL(url, callback) {
   var xhr = new XMLHttpRequest();
   try {
     xhr.onreadystatechange = function(state) {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
           var text = xhr.responseText;
           callback(text);
         }
@@ -29,10 +29,7 @@ function summarizeTags(dances) {
 
   for (var i = 0; i < dances.length; ++i) {
     _.each(dances[i].tags, function(count, tag, list) {
-      if (!_.has(tagMaxCounts, tag))
-        tagMaxCounts[tag] = count;
-      else
-        tagMaxCounts[tag] = Math.max(tagMaxCounts[tag], count);
+      tagMaxCounts[tag] = Math.max(tagMaxCounts[tag] || 0, count);
     });
   }
 
@@ -138,6 +135,8 @@ function redisplayMain() {
   }
 };
 
+// TODO(yoz): Hide/disable tag buttons that would result in 0 available.
+// This would probably require recomputing tags with the current set of dances.
 function redisplayTags() {
   // Change tag labels to reflect the gender reality.
   var tagboxes = document.getElementsByClassName('tagbox');
@@ -191,15 +190,39 @@ function getRewordGender(genderWords) {
   };
 }
 
+function filterIndex() {
+  var nameFilter = document.getElementById('namefilter').value.toLowerCase();
+  for (var i = 0; i < indexNames.length; ++i) {
+    var hide = (indexNames[i].search(nameFilter) === -1);
+    _.each(tagFilters, function(value, tag, list) {
+      var danceValue = dances[i].tags[tag] || 0;
+      // x: Cross product: Not implemented yet; requires indexLinks reordering
+      if (value === 'x')
+        return;
+      // n: Exactly n
+      if (value >= 0 && danceValue != value)
+        hide = true;
+      // -n: At least n
+      else if (value < 0 && danceValue < -value)
+        hide = true;
+    });
+    if (hide) {
+      indexLinks[i].classList.add('hidden');
+    } else {
+      indexLinks[i].classList.remove('hidden');
+    }
+  }
+}
+
 // TODO(yoz): What is a sensible return type for this?
 function tagboxIndexToValue(index) {
-  if (index == 0)  // cross-product split
+  if (index === 0)  // cross-product split
     return 'x';
-  if (index == 1)  // 0
+  if (index === 1)  // 0
     return 0;
-  if (index % 2 == 0)  // 1, 2, ...
+  if (index % 2 === 0)  // 1, 2, ...
     return index / 2;
-  if (index % 2 == 1)  // 1+, 2+, ...
+  if (index % 2 === 1)  // 1+, 2+, ...
     return -Math.floor(index / 2);
 }
 
@@ -238,19 +261,8 @@ function getToggleTag(tagName, value) {
         deselectTagButton(activeTag);
       selectTagButton(tagButton);
     }
+    filterIndex();
   };
-}
-
-// TODO(yoz): filter on tags.
-function filterIndex() {
-  var nameFilter = document.getElementById('namefilter').value.toLowerCase();
-  for (var i = 0; i < indexNames.length; ++i) {
-    if (indexNames[i].search(nameFilter) > -1) {
-      indexLinks[i].classList.remove('hidden');
-    } else {
-      indexLinks[i].classList.add('hidden');
-    }
-  }
 }
 
 window.onload = function() {
@@ -276,7 +288,7 @@ window.onload = function() {
         // Can we clean this up?
         // binaryTags: a list of tag names
         var binaryTags = _.pluck(
-          _.filter(tags, function(tcpair) { return tcpair.count == 1; }),
+          _.filter(tags, function(tcpair) { return tcpair.count === 1; }),
           'tag');
         // countTags: a list of {tag: tagname, counters: [0..n]}
         // (We expand n to the array [0..n] here, but a handlebars helper
@@ -315,7 +327,7 @@ window.onload = function() {
           for (var j = 0; j < tagButtons.length; ++j) {
             // Initialize tagNames to match the ordering of tags from
             // getElementsByClassName.
-            if (j == 0)
+            if (j === 0)
               tagNames[i] = tagButtons[j].value;
             tagButtons[j].addEventListener(
               'click',
