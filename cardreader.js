@@ -47,6 +47,28 @@ function summarizeTags(dances) {
   });
 }
 
+// Already the default, so also representable by null.
+var GENTS_AND_LADIES = {
+  gent: 'gent',
+  gents: 'gents',
+  lady: 'lady',
+  ladies: 'ladies'
+};
+
+var BANDS_AND_BAREARMS = {
+  gent: 'band',
+  gents: 'bands',
+  lady: 'barearm',
+  ladies: 'barearms'
+};
+
+var LARKS_AND_RAVENS = {
+  gent: 'lark',
+  gents: 'larks',
+  lady: 'raven',
+  ladies: 'ravens'
+};
+
 // TODO(yoz): Make this toggleable.
 var barearms = 'ravens';
 var barearm = 'raven';
@@ -55,19 +77,19 @@ var armband = 'lark';
 
 // All of these only match complete words.
 // TODO(yoz): Deal with punctuation/apostrophes.
-var genderFreeMap = {
-  'ladies': barearms,
-  'lady': barearm,
-  'gents': armbands,
-  'gent': armband,
-  'women': barearms,
-  'woman': barearm,
-  'men': armbands,
-  'man': armband,
+var GENDER_SOURCE_WORDS = {
+  ladies: 'ladies',
+  lady: 'lady',
+  gents: 'gents',
+  gent: 'gent',
+  women: 'ladies',
+  woman: 'lady',
+  men: 'gents',
+  man: 'gent'
 };
 
 // TODO(yoz): globals are gross
-var gendered = true;
+var selectedGenderWords = null;
 var dances;
 var templateCard;
 // TODO(yoz): show multiple cards, rearrange them, index search, etc.
@@ -93,12 +115,10 @@ function redisplayMain() {
   var context = {lings: selectedDances.map(function(index) { return dances[index].lines; }) };
   var mains = templateCard(context);
   // TODO(yoz): can this be more efficient than making copies?
-  if (!gendered) {
-    for (var fromWord in genderFreeMap) {
-      if (genderFreeMap.hasOwnProperty(fromWord)) {
-        mains = replaceWord(mains, fromWord, genderFreeMap[fromWord]);
-      }
-    }
+  if (selectedGenderWords) {
+    _.each(GENDER_SOURCE_WORDS, function(to, from, list) {
+      mains = replaceWord(mains, from, selectedGenderWords[to]);
+    });
   }
   elMains.innerHTML = mains;
 
@@ -127,7 +147,7 @@ function getUpDance(name, card) {
     selectedDances.splice(i, 1);
     selectedDances.splice(j, 0, name);
     redisplayMain();  // TODO(yoz): reorder DOM?
-  }
+  };
 }
 
 function getDownDance(name, card) {
@@ -137,7 +157,7 @@ function getDownDance(name, card) {
     selectedDances.splice(i, 1);
     selectedDances.splice(j, 0, name);
     redisplayMain();  // TODO(yoz): reorder DOM?
-  }
+  };
 }
 
 function getCloseDance(name, card) {
@@ -145,12 +165,14 @@ function getCloseDance(name, card) {
     var i = selectedDances.indexOf(name);
     selectedDances.splice(i, 1);
     card.parentNode.removeChild(card);
-  }
+  };
 }
 
-function toggleGender(name) {
-  gendered = document.getElementById('gender').checked;
-  redisplayMain();
+function getRewordGender(genderWords) {
+  return function() {
+    selectedGenderWords = genderWords;
+    redisplayMain();
+  };
 }
 
 // TODO(yoz): What is a sensible return type for this?
@@ -234,7 +256,6 @@ window.onload = function() {
 
         // Generate tag summary and counts.
         var tags = summarizeTags(dances);
-        console.log(tags);
         // We infer that a tag is binary if its max value is 1.
         // Can we clean this up?
         // binaryTags: a list of tag names
@@ -261,7 +282,13 @@ window.onload = function() {
 
         document.body.innerHTML = templateWhole(indexContext);
 
-        document.getElementById('gender').addEventListener('click', toggleGender);
+        document.getElementById('gentsladies').addEventListener(
+          'click', getRewordGender(null));
+        document.getElementById('bandsbarearms').addEventListener(
+          'click', getRewordGender(BANDS_AND_BAREARMS));
+        document.getElementById('larksravens').addEventListener(
+          'click', getRewordGender(LARKS_AND_RAVENS));
+        
         document.getElementById('namefilter').addEventListener('input', filterIndex);
 
         // Add click handlers to tags.
