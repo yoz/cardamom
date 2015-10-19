@@ -146,9 +146,21 @@ function redisplayTags() {
   }
 }
 
+function saveSelectedDances() {
+  localStorage["selectedDances"] = selectedDances.join(',');
+}
+
+function restoreSelectedDances() {
+  if (localStorage["selectedDances"]) {
+    selectedDances = _.map(localStorage["selectedDances"].split(','),
+                           function(x) { return parseInt(x); });
+  }
+}
+
 function getSelectDance(index) {
   return function() {
     selectedDances.push(index);
+    saveSelectedDances();
     redisplayMain();
   };
 }
@@ -160,6 +172,7 @@ function getUpDance(name, card) {
     var j = (selectedDances.length + i-1) % selectedDances.length;
     selectedDances.splice(i, 1);
     selectedDances.splice(j, 0, name);
+    saveSelectedDances();
     redisplayMain();  // TODO(yoz): reorder DOM?
   };
 }
@@ -170,6 +183,7 @@ function getDownDance(name, card) {
     var j = (i+1) % selectedDances.length;
     selectedDances.splice(i, 1);
     selectedDances.splice(j, 0, name);
+    saveSelectedDances();
     redisplayMain();  // TODO(yoz): reorder DOM?
   };
 }
@@ -178,6 +192,7 @@ function getCloseDance(name, card) {
   return function() {
     var i = selectedDances.indexOf(name);
     selectedDances.splice(i, 1);
+    saveSelectedDances();
     card.parentNode.removeChild(card);
   };
 }
@@ -346,6 +361,9 @@ window.onload = function() {
                                  getSelectDance(i));
         }
 
+        // Restore data from a reload.
+        restoreSelectedDances();
+        redisplayMain();
       });
     });
   });
