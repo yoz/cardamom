@@ -45,7 +45,15 @@ class CountTag(Tag):
 
 class ZeroOneTag(Tag):
   def DefaultMatch(self, text):
-    return int(self.fragment in text)
+    # Whole word matching
+    match_pos = text.find(self.fragment)
+    if match_pos == -1:
+      return False
+    if match_pos > 0 and text[match_pos - 1].isalnum():
+      return False
+    if match_pos + len(self.fragment) < len(text) and text[match_pos + len(self.fragment)].isalnum():
+      return False
+    return True
 
   def DefaultReduce(self, a, b):
     return a | b
@@ -88,15 +96,18 @@ _HEADER_TAGS = [
   ZeroOneTag('proper', matcher=lambda x: x.startswith('proper')),
   ZeroOneTag('proper', name='asymmetric'),
   ZeroOneTag('mixer'),
+  ZeroOneTag('English'),
 ]
 
 
 _BODY_TAGS = [
   BalanceCountTag('balance'),
+  CountTag('allemande'),
   CountTag('circle left'),
   CountTag('hey'),
   CountTag('long lines'),
-  CountTag('gypsy'),
+  CountTag('roll', name='rollaway'),
+  CountTag('shoulder round'),
   CountTag('mad robin'),
   CountTag('ladies chain'),
   # TODO(yoz): account for 4-face-4s (e.g. Richfield Stomp, Hey for John)
@@ -116,7 +127,15 @@ _BODY_TAGS = [
   ZeroOneTag('pass the ocean', name='short wave'),
   ZeroOneTag('down the hall'),
   ZeroOneTag('gents allemande left'),
+  ZeroOneTag('ladies allemande right'),
+  ZeroOneTag('petronella'),
+  # TODO(yoz): implement rory logic
+  ZeroOneTag('right and left thru'),
   ZeroOneTag('shadow'),
+  ZeroOneTag('star promenade'),
+  ZeroOneTag('square thru'),
+  # TODO(yoz): A1 N bal/gypsy/dosido, swing
+  # TODO(yoz): progression types?
 ]
 
 

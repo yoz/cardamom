@@ -28,7 +28,7 @@ def DumpDances(dances):
 
 
 if __name__ == '__main__':
-    dances = ImportDirs(['../working', '../incomplete'])
+    dances = ImportDirs(['../working', '../incomplete', '../yours'])
     f = open('aout.json', 'w')
     f.write(DumpDances(dances))
     f.close()

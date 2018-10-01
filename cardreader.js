@@ -73,7 +73,6 @@ var armbands = 'larks';
 var armband = 'lark';
 
 // All of these only match complete words.
-// TODO(yoz): Deal with punctuation/apostrophes.
 var GENDER_SOURCE_WORDS = {
   ladies: 'ladies',
   lady: 'lady',
