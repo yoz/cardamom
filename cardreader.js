@@ -66,6 +66,13 @@ var LARKS_AND_RAVENS = {
   ladies: 'ravens'
 };
 
+var LARKS_AND_ROBINS = {
+  gent: 'lark',
+  gents: 'larks',
+  lady: 'robin',
+  ladies: 'robins'
+};
+
 // TODO(yoz): Make this toggleable.
 var barearms = 'ravens';
 var barearm = 'raven';
@@ -330,6 +337,8 @@ window.onload = function() {
           'click', getRewordGender(BANDS_AND_BAREARMS));
         document.getElementById('larksravens').addEventListener(
           'click', getRewordGender(LARKS_AND_RAVENS));
+        document.getElementById('larksrobins').addEventListener(
+          'click', getRewordGender(LARKS_AND_ROBINS));
         
         document.getElementById('namefilter').addEventListener('input', filterIndex);
 
