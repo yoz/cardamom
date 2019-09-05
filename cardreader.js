@@ -287,11 +287,11 @@ function getToggleTag(tagName, value) {
 }
 
 window.onload = function() {
-  requestURL('template_card.html', function(cardBlob) {
-    requestURL('template_whole.html', function(wholeBlob) {
+  fetch('template_card.html').then((cardResponse) => cardResponse.text()).then((cardBlob) => {
+    fetch('template_whole.html').then((wholeResponse) => wholeResponse.text()).then((wholeBlob) => {
       templateCard = Handlebars.compile(cardBlob);
       var templateWhole = Handlebars.compile(wholeBlob);
-      requestURL('data/dances.json', function(danceBlob) {
+      fetch('data/dances.json').then((danceResponse) => danceResponse.text()).then((danceBlob) => {
         dances = JSON.parse(danceBlob);
         // Sort dances so they have a consistent index, alphabetical order.
         // TODO(yoz): Get a better UID that can survive data changes.
@@ -352,9 +352,7 @@ window.onload = function() {
             // getElementsByClassName.
             if (j === 0)
               tagNames[i] = tagButtons[j].value;
-            tagButtons[j].addEventListener(
-              'click',
-              getToggleTag(tagNames[i], tagboxIndexToValue(j)));
+            tagButtons[j].addEventListener('click', getToggleTag(tagNames[i], tagboxIndexToValue(j)));
           }
         }
 
@@ -365,8 +363,7 @@ window.onload = function() {
         for (var i = 0; i < indexLinks.length; ++i) {
           indexNames[i] = indexLinks[i].firstElementChild.text.toLowerCase();
           var alink = indexLinks[i].firstElementChild;
-          alink.addEventListener('click',
-                                 getSelectDance(i));
+          alink.addEventListener('click', getSelectDance(i));
         }
 
         // Restore data from a reload.

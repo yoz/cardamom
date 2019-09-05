@@ -15,13 +15,15 @@ function precache() {
       '/cardamom/app.js',
       '/cardamom/cardreader.js',
       '/cardamom/cards.css',
-      '/cardamom/cards2.html',
+      '/cardamom/index.html',
       '/cardamom/data/dances.json',
       '/cardamom/handlebars.js',
       '/cardamom/template_card.html',
       '/cardamom/template_whole.html',
       '/cardamom/underscore.js',
-    ]);
+    ]).catch((err) => {
+      console.log(err);
+    });
   });
 }
 

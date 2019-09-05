@@ -13,7 +13,7 @@ body {
 }
 
 #search {
-    background: #d4f1d8;
+    background: #d4d1d8;
     margin-top: 1ex;
     margin-bottom: 1ex;
 }
@@ -84,6 +84,7 @@ div.indexlink {
     line-height: 1em;
     margin-top: 0.6ex;
     margin-bottom: 0.6ex;
+    cursor: pointer;
 }
 
 .tagtable {
@@ -100,6 +101,7 @@ div.indexlink {
     outline: none;
     font-size: 14px;
     border-radius: 3px;
+    cursor: pointer;
 }
 
 .tagbox input[type="button"].tag {
@@ -111,4 +113,8 @@ div.indexlink {
     background-color: #435;
     color: #cec;
     border: 1px solid #cec;
+}
+
+a.displaydance {
+    cursor: pointer;
 }
