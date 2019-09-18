@@ -1,11 +1,11 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/cardamom/sw.js').then((reg) => {
     if(reg.installing) {
-      console.log('Service worker installing');
+      document.getElementById('appstatus').innerText = 'Service worker installing';
     } else if(reg.waiting) {
-      console.log('Service worker installed');
+      document.getElementById('appstatus').innerText = 'Service worker installed';
     } else if(reg.active) {
-      console.log('Service worker active');
+      document.getElementById('appstatus').innerText = 'Service worker active';
     }
   });
 }

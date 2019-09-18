@@ -1,4 +1,4 @@
-const CACHE = 'v1';
+const CACHE = 'v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(precache());
@@ -18,11 +18,11 @@ function precache() {
       '/cardamom/index.html',
       '/cardamom/data/dances.json',
       '/cardamom/handlebars.js',
-      '/cardamom/template_card.html',
-      '/cardamom/template_whole.html',
+      '/cardamom/template_card_2.html',
+      '/cardamom/template_whole_2.html',
       '/cardamom/underscore.js',
     ]).catch((err) => {
-      console.log(err);
+      console.log('precache fail', err);
     });
   });
 }
@@ -32,11 +32,17 @@ function fromCache(request) {
     return cache.match(request).then((matched) => {
       return matched || Promise.reject('no match sorry');
     });
-  });
+  })
+    .catch((err) => {
+      console.log('cache fail', err);
+    });
 }
 
 function update(request) {
   return caches.open(CACHE).then((cache) => {
     return cache.add(request);
-  });
+  })
+    .catch((err) => {
+      console.log('update fail', err, request);
+    });
 }

@@ -287,8 +287,8 @@ function getToggleTag(tagName, value) {
 }
 
 window.onload = function() {
-  fetch('template_card.html').then((cardResponse) => cardResponse.text()).then((cardBlob) => {
-    fetch('template_whole.html').then((wholeResponse) => wholeResponse.text()).then((wholeBlob) => {
+  fetch('template_card_2.html').then((cardResponse) => cardResponse.text()).then((cardBlob) => {
+    fetch('template_whole_2.html').then((wholeResponse) => wholeResponse.text()).then((wholeBlob) => {
       templateCard = Handlebars.compile(cardBlob);
       var templateWhole = Handlebars.compile(wholeBlob);
       fetch('data/dances.json').then((danceResponse) => danceResponse.text()).then((danceBlob) => {
